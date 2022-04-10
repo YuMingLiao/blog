@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -exu
+
+app_name=$1
+result=$(nix-build --no-out-link release.nix)
+
+docker load < $result
+docker tag pm36-on-heroku registry.heroku.com/$app_name/web
+docker push registry.heroku.com/$app_name/web
+
+heroku container:release -a $app_name web
